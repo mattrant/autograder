@@ -1,16 +1,14 @@
 import json
 from copy import deepcopy
-from subprocess import call,Popen,PIPE,check_output,CalledProcessError
-
+from subprocess import call,Popen,PIPE,check_output,CalledProcessError,STDOUT
+import signal
 class autograder_outline:
-    #file containing the anwser key
     grading_key = None
     student_response = None
     failed_compilation = {}
     graded = False
 
     def __init__(self):
-        #encode as json to ensure dissambiguation of return value (ie 6 vs "6")
         correct_output = open("grading_key.txt","r")
         file_contents = correct_output.read()
         #parse in json info from grading key
@@ -50,6 +48,7 @@ class autograder_outline:
 
             print "\nGrading file",problem,"..."
 
+            #extracts the part of the file name before .*
             file_output_name= problem.split(".")[0]
 
             if not self.can_compile(problem):
@@ -59,14 +58,14 @@ class autograder_outline:
                 i = 0
                 for program_input in self.grading_key[problem][test_case]["input"]:
                     #start program
-                    p = Popen('./'+file_output_name, stdin = PIPE, stdout = PIPE)
+                    p = Popen('./'+file_output_name, shell=True,stdin = PIPE, stdout = PIPE,stderr=STDOUT)
                     #give input to program
                     p.stdin.write(str(program_input))
                     p.stdin.flush()
                     #wait for program to produce answer
                     p.wait()
                     result = p.stdout.read()
-
+                    #get expected answer from JSON file
                     expected_output = self.grading_key[problem][test_case]["expected output"][i]
 
                     if result == expected_output:
@@ -101,7 +100,10 @@ class autograder_outline:
         """
         print "Incorrect Output"
         print "\tInput:",program_input
+        #repr() will print escape characters
         print "\tOutput:",repr(output)
+        #for unicode encoded strings python will print out u'<contents of string'
+        #the purpose of [1:] is to remove the 'u' from the printed output
         print "\tExpected Output:", repr(expected_output)[1:]
 
     def print_dictionary(self,dictionary):

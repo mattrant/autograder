@@ -1,25 +1,89 @@
 import json
 from copy import deepcopy
 from subprocess import call,Popen,PIPE,check_output,CalledProcessError,STDOUT
-import signal
+from sys import argv
 class autograder_outline:
     grading_key = None
     student_response = None
     failed_compilation = {}
     graded = False
+    building_key = False
 
     def __init__(self):
         correct_output = open("grading_key.txt","r")
         file_contents = correct_output.read()
         #parse in json info from grading key
         self.grading_key = json.loads(file_contents)
-        self.student_response = deepcopy(self.grading_key)
-        self.clear_student_info()
-        self.grade()
+        if(len(argv)>1 and argv[1] == "--build-grading-key"):
+            self.building_key = True
+            self.clear_answers()
+            self.build_grading_key()
+        else:
+            self.student_response = deepcopy(self.grading_key)
+            self.clear_student_info()
+            self.grade()
 
     def __del__(self):
-        if not self.graded:
+        if not self.graded and not self.building_key:
             self.report_grade()
+
+    def build_grading_key(self):
+        for problem in self.grading_key:
+
+            print "\nCreating answers for file",problem,"..."
+
+            #extracts the part of the file name before .*
+            file_output_name= problem.split(".")[0]
+
+            if not self.can_compile(problem):
+                continue
+
+            for test_case in self.grading_key[problem]:
+                i = 0
+                for program_input in self.grading_key[problem][test_case]["input"]:
+
+                    result ,error = self.get_output(file_output_name,program_input)
+                    #get expected answer from JSON file
+                    print "~"*40
+                    print "Input:",program_input
+                    print "Accepted Answer:",result
+                    self.grading_key[problem][test_case]["expected output"][i] = result
+
+                    i+=1
+        self.write_answers_to_file()
+    def write_answers_to_file(self):
+        key = open("grading_key.txt","w")
+        json_string = self.beautify_json(json.dumps(self.grading_key))
+        key.write(json_string)
+    def beautify_json(self,json_string):
+
+        tabs = 0
+        finished_json = ""
+        in_array = False
+
+        for c in json_string:
+            if c == '{':
+                tabs+=1
+                finished_json+=c+'\n'+'\t'*tabs
+            elif c == '}':
+                finished_json+='\n'+'\t'*tabs+c
+                tabs-=1
+            elif c == ',' and not in_array:
+                finished_json+=c+'\n'+'\t'*tabs
+            elif c=='[':
+                finished_json+=c
+                in_array = True
+            elif c == ']':
+                finished_json+=c
+                in_array = False
+            else:
+                finished_json+=c
+        return "".join(finished_json)
+    def clear_answers(self):
+        for problem in self.grading_key:
+            for test_case in self.grading_key[problem]:
+                #sets up a 'blank' array of answers
+                self.grading_key[problem][test_case]["expected output"] = [0 for x in self.grading_key[problem][test_case]["input"]]
 
     def clear_student_info(self):
         """
@@ -57,14 +121,8 @@ class autograder_outline:
             for test_case in self.grading_key[problem]:
                 i = 0
                 for program_input in self.grading_key[problem][test_case]["input"]:
-                    #start program
-                    p = Popen('./'+file_output_name, shell=True,stdin = PIPE, stdout = PIPE,stderr=STDOUT)
-                    #give input to program
-                    p.stdin.write(str(program_input))
-                    p.stdin.flush()
-                    #wait for program to produce answer
-                    p.wait()
-                    result = p.stdout.read()
+
+                    result ,error = self.get_output(file_output_name,program_input)
                     #get expected answer from JSON file
                     expected_output = self.grading_key[problem][test_case]["expected output"][i]
 
@@ -73,10 +131,17 @@ class autograder_outline:
                         self.student_response[problem][test_case]["score"][i]= self.grading_key[problem][test_case]["score"]
                     else:
                         #give hint for problem since it was incorrect
-                        self.print_hint(program_input,result,expected_output)
+                        self.print_hint(program_input,err,expected_output)
                     i+=1
         self.report_grade()
         self.graded = True
+
+    def get_output(self,file_name,program_input):
+        #start program
+        p = Popen('./'+file_name,shell=True,stdin = PIPE, stdout = PIPE,stderr=PIPE)
+        #give input to program
+        return p.communicate(input=str(program_input))
+
 
     def report_grade(self):
         """

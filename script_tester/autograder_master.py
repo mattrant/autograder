@@ -56,6 +56,11 @@ class autograder_outline:
         json_string = self.beautify_json(json.dumps(self.grading_key))
         key.write(json_string)
     def beautify_json(self,json_string):
+        """
+        Makes the json string human readable
+        Input:
+            json_string: string to be made human readable
+        """
 
         tabs = 0
         finished_json = ""
@@ -137,6 +142,12 @@ class autograder_outline:
         self.graded = True
 
     def get_output(self,file_name,program_input):
+        """
+        Gets output from a program by giving it input to stdin
+        Input:
+            file_name: name of the prgram to be run
+            program_input: input to be sent to the program's stdin
+        """
         #start program
         p = Popen('./'+file_name,shell=True,stdin = PIPE, stdout = PIPE,stderr=PIPE)
         #give input to program
@@ -162,6 +173,10 @@ class autograder_outline:
     def print_hint(self,program_input,output,expected_output):
         """
         Prints out the hint for the specified arguments
+        Input:
+            program_input: input provided to graded program
+            output: output produced by program for program_input
+            expected_output: correct ouput that should result from input of program_input
         """
         print "Incorrect Output"
         print "\tInput:",program_input

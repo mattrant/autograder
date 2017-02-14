@@ -33,16 +33,19 @@ class autograder_outline:
             print "\nCreating answers for file",problem,"..."
 
             #extracts the part of the file name before .*
-            file_output_name= problem.split(".")[0]
-
-            if not self.can_compile(problem):
+            if not self.can_compile(self.grading_key[problem]["compile_string"],problem):
                 continue
 
+            #remove compile_string in order to avoid errors in grading loop
+
+
             for test_case in self.grading_key[problem]:
+                if test_case == "compile_string":
+                    continue;
                 i = 0
                 for program_input in self.grading_key[problem][test_case]["input"]:
 
-                    result ,error = self.get_output(file_output_name,program_input)
+                    result ,error = self.get_output(problem,program_input)
                     #get expected answer from JSON file
                     print "~"*40
                     print "Input:",program_input
@@ -87,6 +90,8 @@ class autograder_outline:
     def clear_answers(self):
         for problem in self.grading_key:
             for test_case in self.grading_key[problem]:
+                if test_case == "compile_string":
+                    continue;
                 #sets up a 'blank' array of answers
                 self.grading_key[problem][test_case]["expected output"] = [0 for x in self.grading_key[problem][test_case]["input"]]
 
@@ -98,6 +103,9 @@ class autograder_outline:
         #goes into the student response dict and clears grades, and replaces
         #'expected output' key with 'your output'
         for problem in self.student_response:
+            #student doesn't need compile_string
+            del self.student_response[problem]["compile_string"]
+
             for test_case in self.student_response[problem]:
 
                 del self.student_response[problem][test_case]["expected output"]
@@ -118,10 +126,13 @@ class autograder_outline:
             print "\nGrading file",problem,"..."
 
             #extracts the part of the file name before .*
-            file_output_name= problem.split(".")[0]
+            file_output_name= problem
 
-            if not self.can_compile(problem):
+            if not self.can_compile(self.grading_key[problem]["compile_string"],problem):
                 continue
+
+            #remove compile_string in order to avoid errors in grading loop
+            del self.grading_key[problem]["compile_string"]
 
             for test_case in self.grading_key[problem]:
                 i = 0
@@ -136,7 +147,7 @@ class autograder_outline:
                         self.student_response[problem][test_case]["score"][i]= self.grading_key[problem][test_case]["score"]
                     else:
                         #give hint for problem since it was incorrect
-                        self.print_hint(program_input,err,expected_output)
+                        self.print_hint(program_input,result,expected_output,error)
                     i+=1
         self.report_grade()
         self.graded = True
@@ -170,7 +181,7 @@ class autograder_outline:
             result["scores"][problem] = total_score
         print json.dumps(result)
 
-    def print_hint(self,program_input,output,expected_output):
+    def print_hint(self,program_input,output,expected_output,error):
         """
         Prints out the hint for the specified arguments
         Input:
@@ -182,6 +193,8 @@ class autograder_outline:
         print "\tInput:",program_input
         #repr() will print escape characters
         print "\tOutput:",repr(output)
+        if not error=='':
+            print "\tError:",len(error),repr(error)
         #for unicode encoded strings python will print out u'<contents of string'
         #the purpose of [1:] is to remove the 'u' from the printed output
         print "\tExpected Output:", repr(expected_output)[1:]
@@ -202,26 +215,24 @@ class autograder_outline:
                     print "\t",entry,":",dictionary[problem][test_case][entry]
         print "*"*40
 
-    def can_compile(self,file_name):
+    def can_compile(self,cmd_string,problem):
         """
         Attempts to compile the specified file. If the compiliation fails, all of
         the grades for this file are set to zero.
         Input:
-            file_name: the name of the file to be compiled
+            cmd_string: string of the compilation command to be executed in the shell
+            problem: name of the problem associated with the compile string
         """
-        #takes file name and removes .c from it
-        file_output_name= file_name.split(".")[0]
-        #builds the command to compile the file
-        cmd_string = "gcc "+file_name+" -o "+file_output_name
+
 
         try:
             check_output(cmd_string.split(" "))
             return True
         except CalledProcessError as e:
-            print "Compilation error. Exiting grading for",file_name,"..."
+            print "Compilation error. Exiting grading for problem",problem,"..."
             return False
         except OSError as e:
-            print "Compilation error. Exiting grading for",file_name,"..."
+            print "Compilation error. Exiting grading for problem",problem,"..."
             return False
 #perform this action if this file is run as a script
 if __name__ == "__main__":

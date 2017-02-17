@@ -141,16 +141,66 @@ class autograder_outline:
                     result ,error = self.get_output(file_output_name,program_input)
                     #get expected answer from JSON file
                     expected_output = self.grading_key[problem][test_case]["expected output"][i]
-
-                    if result == expected_output:
-                        #mark that the student got this one correct
-                        self.student_response[problem][test_case]["score"][i]= self.grading_key[problem][test_case]["score"]
+                    if "tolerance"in self.grading_key[problem][test_case]:
+                        tolerance = self.grading_key[problem][test_case]["tolerance"]
+                        #check if floats are within the tolerance
+                        if self.compare_float(result,expected_output,tolerance):
+                            self.student_response[problem][test_case]["score"][i]= self.grading_key[problem][test_case]["score"]
+                        else:
+                            self.print_hint(program_input,result,expected_output,error)
                     else:
-                        #give hint for problem since it was incorrect
-                        self.print_hint(program_input,result,expected_output,error)
+                        if result == expected_output:
+                            #mark that the student got this one correct
+                            self.student_response[problem][test_case]["score"][i]= self.grading_key[problem][test_case]["score"]
+                        else:
+                            #give hint for problem since it was incorrect
+                            self.print_hint(program_input,result,expected_output,error)
                     i+=1
         self.report_grade()
         self.graded = True
+    def print_failed_tolerance_check_string(result,expected_output,tolerance):
+        result_number = result.split(" ")[-1]
+        expected_number = expected_output.split(" ")[-1]
+        print "\tResulting number",result_number,"not within tolerance of",tolerance,"from",result_number
+
+    def compare_float(self,result,expected_output,tolerance):
+        """
+        Compares results containing floating point numbers to and checks if the
+        floating point numbers contained in the results are within the tolerance
+        of each other
+        Input:
+            result: string containing a float as the last value in a string. Must
+                    be of the format "<rest of string>  <float>"
+            expected_output: string containing a float as the last value in a string.
+                             Must conform to the same format as result_array
+            tolerance: the tolerance values for the absolute difference of the result
+                       float and the expected_output float
+        Returns:
+            Returns true when the absolute difference of the floats is within
+            the tolerance and the string portions of the result and expected_output
+            match each other
+        """
+        #double should always be the last thing in the result seperated by a space
+        #with nothing after it
+        result_array = result.split(" ")
+        expected_array = expected_output.split(" ")
+        value = result_array.pop()
+        expected_value =  float(expected_array.pop())
+
+        #must ensure last thing in string is a double
+        try:
+            value = float(value)
+        except ValueError:
+            return False
+
+        rest_of_result = " ".join(result_array)
+        rest_of_expected= " ".join(expected_array)
+
+        if abs(expected_value-value)<=tolerance:
+            return rest_of_result==rest_of_expected
+        else:
+            print value,"not within",tolerance,"of",expected_value
+            return False
 
     def get_output(self,file_name,program_input):
         """
@@ -194,10 +244,11 @@ class autograder_outline:
         #repr() will print escape characters
         print "\tOutput:",repr(output)
         if not error=='':
-            print "\tError:",len(error),repr(error)
+            print "\tError:",repr(error)
         #for unicode encoded strings python will print out u'<contents of string'
         #the purpose of [1:] is to remove the 'u' from the printed output
         print "\tExpected Output:", repr(expected_output)[1:]
+        print "~"*40
 
     def print_dictionary(self,dictionary):
         """

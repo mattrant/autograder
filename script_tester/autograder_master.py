@@ -196,10 +196,11 @@ class autograder_outline:
         rest_of_result = " ".join(result_array)
         rest_of_expected= " ".join(expected_array)
 
-        if abs(expected_value-value)<=tolerance:
+        #check if expected answer is within percent tolerance of actual answer
+        if abs(expected_value-value)<=(tolerance*max(abs(expected_value),abs(value))):
             return rest_of_result==rest_of_expected
         else:
-            print value,"not within",tolerance,"of",expected_value
+            print value,"not within",tolerance*100,"percent of",expected_value
             return False
 
     def get_output(self,file_name,program_input):

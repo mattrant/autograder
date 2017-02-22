@@ -1,6 +1,0 @@
-all:
-	tar xvf autograde.tar
-	tar xvf script_tester.tar
-	python hello_autolab.py
-clean:
-	rm -rf *~ 

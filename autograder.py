@@ -30,7 +30,7 @@ class autograder_outline:
     def build_grading_key(self):
         for problem in self.grading_key:
 
-            print "\nCreating answers for file",problem,"..."
+            print("\nCreating answers for file",problem,"...")
 
             #extracts the part of the file name before .*
             if not self.can_compile(self.grading_key[problem]["compile_string"],problem):
@@ -47,9 +47,9 @@ class autograder_outline:
 
                     result ,error = self.get_output(problem,program_input)
                     #get expected answer from JSON file
-                    print "~"*40
-                    print "Input:",program_input
-                    print "Accepted Answer:",result
+                    print("~"*40)
+                    print("Input:",program_input)
+                    print("Accepted Answer:",result)
                     self.grading_key[problem][test_case]["expected output"][i] = result
 
                     i+=1
@@ -123,7 +123,7 @@ class autograder_outline:
         """
         for problem in self.grading_key:
 
-            print "\nGrading file",problem,"..."
+            print("\nGrading file",problem,"...")
 
             #extracts the part of the file name before .*
             file_output_name= problem
@@ -161,7 +161,7 @@ class autograder_outline:
     def print_failed_tolerance_check_string(result,expected_output,tolerance):
         result_number = result.split(" ")[-1]
         expected_number = expected_output.split(" ")[-1]
-        print "\tResulting number",result_number,"not within tolerance of",tolerance,"from",result_number
+        print("\tResulting number",result_number,"not within tolerance of",tolerance,"from",result_number)
 
     def compare_float(self,result,expected_output,tolerance):
         """
@@ -200,7 +200,7 @@ class autograder_outline:
         if abs(expected_value-value)<=(tolerance*max(abs(expected_value),abs(value))):
             return rest_of_result==rest_of_expected
         else:
-            print value,"not within",tolerance*100,"percent of",expected_value
+            print(value,"not within",tolerance*100,"percent of",expected_value)
             return False
 
     def get_output(self,file_name,program_input):
@@ -213,8 +213,9 @@ class autograder_outline:
         #start program
         p = Popen('./'+file_name,shell=True,stdin = PIPE, stdout = PIPE,stderr=PIPE)
         #give input to program
-        return p.communicate(input=str(program_input))
-
+        #all python3 strings must be converted to/from bytes with IO
+        result,error =p.communicate(input=bytes(str(program_input),"ascii"))
+        return (str(result,'ascii'),str(error,'ascii'))
 
     def report_grade(self):
         """
@@ -230,7 +231,7 @@ class autograder_outline:
                 #no points will be given
                 total_score += min(self.student_response[problem][test_case]["score"])
             result["scores"][problem] = total_score
-        print json.dumps(result)
+        print(json.dumps(result))
 
     def print_hint(self,program_input,output,expected_output,error):
         """
@@ -240,16 +241,16 @@ class autograder_outline:
             output: output produced by program for program_input
             expected_output: correct ouput that should result from input of program_input
         """
-        print "Incorrect Output"
-        print "\tInput:",program_input
+        print("Incorrect Output")
+        print("\tInput:",program_input)
         #repr() will print escape characters
-        print "\tOutput:",repr(output)
+        print("\tOutput:",repr(output))
         if not error=='':
-            print "\tError:",repr(error)
+            print("\tError:",repr(error))
         #for unicode encoded strings python will print out u'<contents of string'
         #the purpose of [1:] is to remove the 'u' from the printed output
-        print "\tExpected Output:", repr(expected_output)[1:]
-        print "~"*40
+        print("\tExpected Output:", repr(expected_output)[1:])
+        print("~"*40)
 
     def print_dictionary(self,dictionary):
         """
@@ -258,14 +259,14 @@ class autograder_outline:
         Input:
             dictionary: the dictionary to be printed
         """
-        print "*"*40
+        print("*"*40)
         for problem in dictionary:
-            print problem,":"
+            print(problem,":")
             for test_case in dictionary[problem]:
-                print test_case,":"
+                print(test_case,":")
                 for entry in dictionary[problem][test_case]:
-                    print "\t",entry,":",dictionary[problem][test_case][entry]
-        print "*"*40
+                    print("\t",entry,":",dictionary[problem][test_case][entry])
+        print("*"*40)
 
     def can_compile(self,cmd_string,problem):
         """
@@ -281,10 +282,10 @@ class autograder_outline:
             check_output(cmd_string.split(" "))
             return True
         except CalledProcessError as e:
-            print "Compilation error. Exiting grading for problem",problem,"..."
+            print("Compilation error. Exiting grading for problem",problem,"...")
             return False
         except OSError as e:
-            print "Compilation error. Exiting grading for problem",problem,"..."
+            print("Compilation error. Exiting grading for problem",problem,"...")
             return False
 #perform this action if this file is run as a script
 if __name__ == "__main__":

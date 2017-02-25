@@ -1,6 +1,6 @@
 import json
 from copy import deepcopy
-from subprocess import call,Popen,PIPE,check_output,CalledProcessError,STDOUT
+from subprocess import call,Popen,PIPE,check_output,CalledProcessError,STDOUT,TimeoutExpired
 from sys import argv
 class autograder_outline:
     grading_key = None
@@ -105,6 +105,7 @@ class autograder_outline:
         for problem in self.student_response:
             #student doesn't need compile_string
             del self.student_response[problem]["compile_string"]
+            del self.student_response[problem]["max time"]
 
             for test_case in self.student_response[problem]:
 
@@ -134,11 +135,15 @@ class autograder_outline:
             #remove compile_string in order to avoid errors in grading loop
             del self.grading_key[problem]["compile_string"]
 
+            max_time = self.grading_key[problem]["max time"]
+            del self.grading_key[problem]["max time"]
+
             for test_case in self.grading_key[problem]:
                 i = 0
                 for program_input in self.grading_key[problem][test_case]["input"]:
 
-                    result ,error = self.get_output(file_output_name,program_input)
+                    result ,error = self.get_output(file_output_name,program_input,max_time)
+                    
                     #get expected answer from JSON file
                     expected_output = self.grading_key[problem][test_case]["expected output"][i]
                     if "tolerance"in self.grading_key[problem][test_case]:
@@ -203,7 +208,7 @@ class autograder_outline:
             print(value,"not within",tolerance*100,"percent of",expected_value)
             return False
 
-    def get_output(self,file_name,program_input):
+    def get_output(self,file_name,program_input,max_time):
         """
         Gets output from a program by giving it input to stdin
         Input:
@@ -214,8 +219,11 @@ class autograder_outline:
         p = Popen('./'+file_name,shell=True,stdin = PIPE, stdout = PIPE,stderr=PIPE)
         #give input to program
         #all python3 strings must be converted to/from bytes with IO
-        result,error =p.communicate(input=bytes(str(program_input),"ascii"))
-        return (str(result,'ascii'),str(error,'ascii'))
+        try:
+            result,error =p.communicate(input=bytes(str(program_input),"ascii"),timeout=max_time)
+            return (str(result,'ascii'),str(error,'ascii'))
+        except TimeoutExpired:
+            return ("","Time expired: program took longer than "+str(max_time)+" seconds")
 
     def report_grade(self):
         """

@@ -126,7 +126,9 @@ class autograder_outline:
         """
         for problem in self.grading_key:
 
-            print("\nGrading file",problem,"...")
+            print("%"*40)
+            print("Grading file",problem,"...")
+            print("%"*40)
 
             #extracts the part of the file name before .*
             file_output_name= problem
@@ -145,7 +147,7 @@ class autograder_outline:
                 for program_input in self.grading_key[problem][test_case]["input"]:
 
                     result ,error = self.get_output(file_output_name,program_input,max_time)
-                    
+
                     #get expected answer from JSON file
                     expected_output = self.grading_key[problem][test_case]["expected output"][i]
                     if "tolerance"in self.grading_key[problem][test_case]:
@@ -254,12 +256,14 @@ class autograder_outline:
         print("Incorrect Output")
         print("\tInput:",program_input)
         #repr() will print escape characters
-        print("\tOutput:",repr(output))
+        # (">"*9) used to line up the output and expected output vertically
+        #for easier visual comparison of strings
+        print("\tOutput"+(">"*9)+":",repr(output))
         if not error=='':
             print("\tError:",repr(error))
         #for unicode encoded strings python will print out u'<contents of string'
         #the purpose of [1:] is to remove the 'u' from the printed output
-        print("\tExpected Output:", repr(expected_output)[1:])
+        print("\tExpected Output:", repr(expected_output))
         print("~"*40)
 
     def print_dictionary(self,dictionary):

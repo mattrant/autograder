@@ -8,6 +8,7 @@ class autograder_outline:
     failed_compilation = {}
     graded = False
     building_key = False
+    skipped_keys = {"max time","compile_string"}
 
     def __init__(self):
         correct_output = open("grading_key.txt","r")
@@ -30,8 +31,9 @@ class autograder_outline:
     def build_grading_key(self):
         for problem in self.grading_key:
 
-            print("\nCreating answers for file",problem,"...")
-
+            print("%"*40)
+            print("Creating answers for file",problem,"...")
+            print("%"*40)
             #extracts the part of the file name before .*
             if not self.can_compile(self.grading_key[problem]["compile_string"],problem):
                 continue
@@ -40,12 +42,12 @@ class autograder_outline:
 
 
             for test_case in self.grading_key[problem]:
-                if test_case == "compile_string":
+                if test_case in self.skipped_keys:
                     continue;
                 i = 0
                 for program_input in self.grading_key[problem][test_case]["input"]:
-
-                    result ,error = self.get_output(problem,program_input)
+                    max_time = self.grading_key[problem]["max time"]
+                    result ,error = self.get_output(problem,program_input,max_time)
                     #get expected answer from JSON file
                     print("~"*40)
                     print("Input:",program_input)
@@ -90,7 +92,7 @@ class autograder_outline:
     def clear_answers(self):
         for problem in self.grading_key:
             for test_case in self.grading_key[problem]:
-                if test_case == "compile_string":
+                if test_case in self.skipped_keys:
                     continue;
                 #sets up a 'blank' array of answers
                 self.grading_key[problem][test_case]["expected output"] = [0 for x in self.grading_key[problem][test_case]["input"]]

@@ -218,6 +218,7 @@ class autograder_outline:
         Input:
             file_name: name of the prgram to be run
             program_input: input to be sent to the program's stdin
+            max_time: maximum allowed time for a program to produce an output
         """
         #start program
         p = Popen('./'+file_name,shell=True,stdin = PIPE, stdout = PIPE,stderr=PIPE)

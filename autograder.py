@@ -2,6 +2,7 @@ import json
 from copy import deepcopy
 from subprocess import call,Popen,PIPE,check_output,CalledProcessError,STDOUT,TimeoutExpired
 from sys import argv
+import os.path
 class autograder_outline:
     grading_key = None
     student_response = None
@@ -150,7 +151,36 @@ class autograder_outline:
 
                     #get expected answer from JSON file
                     expected_output = self.grading_key[problem][test_case]["expected output"][i]
-                    if "tolerance"in self.grading_key[problem][test_case]:
+
+                    #check if file contents should be compared
+                    if("check files" in self.grading_key[problem][test_case]):
+                        #removes the last '-' seperated portion of the file name
+                        answer_file_name = expected_output
+                        student_file_name = "".join(answer_file_name.split("-")[:-1])
+                        
+                        student_contents = ""
+
+                        if not os.path.isfile(answer_file_name):
+                            print("Answer file not found:",answer_file_name)
+                            #answer files should be present
+                            #someone must have forgot to upload them
+                            raise OSError("File not Found:",answer_file_name)
+
+                        answer_contets = open(answer_file_name,"rt").read()
+
+                        if not os.path.isfile(student_file_name):
+                            print("File not found:",student_file_name)
+                        else:
+                            student_contents = open(student_file_name,"rt").read()
+
+                        #TODO: float comparison from file contents
+                        if(student_contents == answer_contets):
+                            self.student_response[problem][test_case]["score"][i]= self.grading_key[problem][test_case]["score"]
+                        else:
+                            self.print_hint(program_input,student_contents,answer_contets,error)
+
+
+                    elif "tolerance"in self.grading_key[problem][test_case]:
                         tolerance = self.grading_key[problem][test_case]["tolerance"]
                         #check if floats are within the tolerance
                         if self.compare_float(result,expected_output,tolerance):
@@ -167,6 +197,7 @@ class autograder_outline:
                     i+=1
         self.report_grade()
         self.graded = True
+
     def print_failed_tolerance_check_string(result,expected_output,tolerance):
         result_number = result.split(" ")[-1]
         expected_number = expected_output.split(" ")[-1]

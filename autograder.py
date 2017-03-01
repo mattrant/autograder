@@ -157,7 +157,7 @@ class autograder_outline:
                         #removes the last '-' seperated portion of the file name
                         answer_file_name = expected_output
                         student_file_name = "".join(answer_file_name.split("-")[:-1])
-                        
+
                         student_contents = ""
 
                         if not os.path.isfile(answer_file_name):
@@ -257,7 +257,7 @@ class autograder_outline:
         #all python3 strings must be converted to/from bytes with IO
         try:
             result,error =p.communicate(input=bytes(str(program_input),"ascii"),timeout=max_time)
-            return (str(result,'ascii'),str(error,'ascii'))
+            return (str(result,'utf-8'),str(error,'utf-8'))
         except TimeoutExpired:
             return ("","Time expired: program took longer than "+str(max_time)+" seconds")
 

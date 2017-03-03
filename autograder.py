@@ -198,11 +198,6 @@ class autograder_outline:
         self.report_grade()
         self.graded = True
 
-    def print_failed_tolerance_check_string(result,expected_output,tolerance):
-        result_number = result.split(" ")[-1]
-        expected_number = expected_output.split(" ")[-1]
-        print("\tResulting number",result_number,"not within tolerance of",tolerance,"from",result_number)
-
     def compare_float(self,result,expected_output,tolerance):
         """
         Compares results containing floating point numbers to and checks if the

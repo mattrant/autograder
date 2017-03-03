@@ -321,13 +321,17 @@ class autograder_outline:
         Input:
             cmd_string: string of the compilation command to be executed in the shell
             problem: name of the problem associated with the compile string
+        Returns:
+            True when the compilation succeeded with no errors
         """
 
 
         try:
-            check_output(cmd_string.split(" "))
+            check_output(cmd_string.split(" "),stderr=STDOUT)
             return True
         except CalledProcessError as e:
+            # end='' is used to suppress the newline from print() in python 3.x
+            print( str(e.output,"utf-8"),end='')
             print("Compilation error. Exiting grading for problem",problem,"...")
             return False
         except OSError as e:

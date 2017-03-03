@@ -30,6 +30,10 @@ class autograder_outline:
             self.report_grade()
 
     def build_grading_key(self):
+        """
+        Builds a grading key from the responses obtained from the programs specified
+        in the file grading_key.txt
+        """
         for problem in self.grading_key:
 
             print("%"*40)
@@ -38,9 +42,6 @@ class autograder_outline:
             #extracts the part of the file name before .*
             if not self.can_compile(self.grading_key[problem]["compile_string"],problem):
                 continue
-
-            #remove compile_string in order to avoid errors in grading loop
-
 
             for test_case in self.grading_key[problem]:
                 if test_case in self.skipped_keys:
@@ -91,6 +92,11 @@ class autograder_outline:
                 finished_json+=c
         return "".join(finished_json)
     def clear_answers(self):
+        """
+        Clears the answers present in the grading key and sets the expected_output
+        array to an array of the same length as the correspoinding input array
+        initialized with all zeros
+        """
         for problem in self.grading_key:
             for test_case in self.grading_key[problem]:
                 if test_case in self.skipped_keys:
@@ -157,7 +163,7 @@ class autograder_outline:
                         #removes the last '-' seperated portion of the file name
                         answer_file_name = expected_output
                         student_file_name = "".join(answer_file_name.split("-")[:-1])
-                        
+
                         student_contents = ""
 
                         if not os.path.isfile(answer_file_name):
@@ -245,6 +251,9 @@ class autograder_outline:
             file_name: name of the prgram to be run
             program_input: input to be sent to the program's stdin
             max_time: maximum allowed time for a program to produce an output
+        Returns:
+            Returns the tuple (output,error) where output is the output of the
+            program and error is the error output of the program
         """
         #start program
         p = Popen('./'+file_name,shell=True,stdin = PIPE, stdout = PIPE,stderr=PIPE)
@@ -279,6 +288,7 @@ class autograder_outline:
             program_input: input provided to graded program
             output: output produced by program for program_input
             expected_output: correct ouput that should result from input of program_input
+            error: the error output of the program
         """
         print("Incorrect Output")
         print("\tInput:",program_input)

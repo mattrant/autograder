@@ -261,7 +261,7 @@ class autograder_outline:
         #all python3 strings must be converted to/from bytes with IO
         try:
             result,error =p.communicate(input=bytes(str(program_input),"ascii"),timeout=max_time)
-            return (str(result,'utf-8',errors="replace"),str(error,'utf-8',errors="replace"))
+            return (str(result,'utf-8',errors="ignore"),str(error,'utf-8',errors="ignore"))
         except TimeoutExpired:
             return ("","Time expired: program took longer than "+str(max_time)+" seconds")
 

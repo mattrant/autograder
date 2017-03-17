@@ -1,13 +1,12 @@
 import json
 from copy import deepcopy
 from subprocess import call,Popen,PIPE,check_output,CalledProcessError,STDOUT,TimeoutExpired
-from sys import argv
 import os.path
 class autograder_outline:
     grading_key = None
     student_response = None
     failed_compilation = {}
-    graded = False
+    reported = False
     building_key = False
     skipped_keys = {"max time","compile_string"}
 
@@ -26,7 +25,7 @@ class autograder_outline:
             self.grade()
 
     def __del__(self):
-        if not self.graded and not self.building_key:
+        if not self.building_key and not self.reported:
             self.report_grade()
 
     def build_grading_key(self):
@@ -202,7 +201,7 @@ class autograder_outline:
                             self.print_hint(program_input,result,expected_output,error)
                     i+=1
         self.report_grade()
-        self.graded = True
+        self.reported = True
 
     def compare_float(self,result,expected_output,tolerance):
         """

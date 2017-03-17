@@ -87,6 +87,10 @@ class autograder_outline:
                     i+=1
         self.write_answers_to_file()
     def write_answers_to_file(self):
+        """
+        Writes grading_key to a file named grading_key.txt after the JSON
+        has been made human readable
+        """
         key = open("grading_key.txt","w")
         json_string = self.beautify_json(json.dumps(self.grading_key))
         key.write(json_string)

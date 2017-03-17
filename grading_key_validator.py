@@ -121,4 +121,8 @@ def check_key_structure(key):
                 is_legal_key = False
         print (40 *'~')
     return is_legal_key
-print(legal_grading_key())
+if __name__ == "__main__":
+    if legal_grading_key():
+        print("Valid grading_key.txt");
+    else:
+        print("Invalid grading_key.txt")

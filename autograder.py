@@ -1,7 +1,11 @@
 import json
 from copy import deepcopy
 from subprocess import call,Popen,PIPE,check_output,CalledProcessError,STDOUT,TimeoutExpired
+from sys import argv,exit
 import os.path
+from grading_key_validator import legal_grading_key
+
+
 class autograder_outline:
     grading_key = None
     student_response = None
@@ -9,30 +13,55 @@ class autograder_outline:
     reported = False
     building_key = False
     skipped_keys = {"max time","compile_string"}
+    cmdline_flags = {"--build-grading-key":None,"--validate-key":None}
 
     def __init__(self):
         correct_output = open("grading_key.txt","r")
         file_contents = correct_output.read()
         #parse in json info from grading key
         self.grading_key = json.loads(file_contents)
-        if(len(argv)>1 and argv[1] == "--build-grading-key"):
-            self.building_key = True
-            self.clear_answers()
-            self.build_grading_key()
+        if len(argv)>1:
+            try:
+                for flag in argv[1:]:
+                    self.cmdline_flags[flag]()
+            except KeyError as k:
+                print(k,"is not a legal flag")
+                exit(0)
         else:
             self.student_response = deepcopy(self.grading_key)
             self.clear_student_info()
             self.grade()
 
+    def register_flag_table(self):
+        """
+        Registers the functions to a jump table that is used to map command line
+        arguments to their repective functions
+        """
+        self.cmdline_flags["--build-grading-key"] = self.build_grading_key
+        self.cmdline_flags["--validate-key"] = self.validate_key
+
+    def validate_key(self):
+        """
+        Ensures that the file grading_key.txt (if it exists) conforms to the
+        specification of a proper grading key.
+        """
+        #TODO:fix this odd key setting being used to prevent __del__ from running
+        self.building_key = True
+        if legal_grading_key():
+            print("Valid grading_key.txt");
+        else:
+            print("Invalid grading_key.txt")
+
     def __del__(self):
         if not self.building_key and not self.reported:
             self.report_grade()
-
     def build_grading_key(self):
         """
         Builds a grading key from the responses obtained from the programs specified
         in the file grading_key.txt
         """
+        self.building_key = True
+        self.clear_answers()
         for problem in self.grading_key:
 
             print("%"*40)

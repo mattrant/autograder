@@ -1,4 +1,2 @@
-*
-!*.py
-!*.md
-!.gitignore
+*.bak
+*.pyc

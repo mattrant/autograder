@@ -188,7 +188,7 @@ class autograder_outline:
                     result ,error = self.get_output(file_output_name,program_input,max_time)
 
                     #get expected answer from JSON file
-                    expected_output = self.grading_key[problem][test_case]["expected output"][i]
+                    expected_output = str(self.grading_key[problem][test_case]["expected output"][i])
 
                     #check if file contents should be compared
                     if("check files" in self.grading_key[problem][test_case]):

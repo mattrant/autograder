@@ -1,0 +1,152 @@
+{
+	"inf_loop": {
+		 "compile_string": "gcc inf_loop.c -o inf_loop",
+		 "max time": 5,
+		 "test case":{
+			 "input":[""],
+			 "expected output":["this should loop infinitely"],
+			 "score":1
+		 }
+	 },
+	 "fault": {
+ 		 "compile_string": "gcc fault.c -o fault",
+ 		 "max time": 5,
+ 		 "test case":{
+ 			 "input":[""],
+ 			 "expected output":["this should fault"],
+ 			 "score":1
+ 		 }
+	 },
+	"missing_file": {
+			 "compile_string": "gcc missing_file.c -o missing_file",
+			 "max time": 5,
+			 "test case":{
+				 "input":[""],
+				 "expected output":["this file should not exist"],
+				 "score":1
+			 }
+		 },
+	"correct_double": {
+				 "compile_string": "gcc correct_double.c -o correct_double",
+				 "max time": 5,
+				 "test case":{
+					 "tolerance":0.05,
+					 "input":[""],
+					 "expected output":["27.856"],
+					 "score":1
+				}
+		},
+		"incorrect_double": {
+ 				 "compile_string": "gcc incorrect_double.c -o incorrect_double",
+ 				 "max time": 5,
+ 				 "test case":{
+ 					 "tolerance":0.05,
+ 					 "input":[""],
+ 					 "expected output":["27.856"],
+ 					 "score":1
+		 			}
+		 },
+		"correct_regular":{
+			"compile_string": "gcc correct_regular.c -o correct_regular",
+			"max time": 5,
+			"test case":{
+				"input":[""],
+				"expected output":["the"],
+				"score":1
+			 }
+		},
+	"incorrect_regular":{
+		"compile_string": "gcc incorrect_regular.c -o incorrect_regular",
+		"max time": 5,
+		"test case":{
+			"input":[""],
+			"expected output":["the"],
+			"score":1
+		 }
+	},
+	"incorrect_file":{
+		"compile_string": "gcc incorrect_file.c -o incorrect_file",
+		"max time": 5,
+		"test case":{
+		"check files":true,
+			"input":[""],
+			"expected output":["incorrect_output_file.txt-answer.txt"],
+			"score":1
+		 }
+	},
+	"correct_file":{
+		"compile_string": "gcc correct_file.c -o correct_file",
+		"max time": 5,
+		"test case":{
+			"check files":true,
+			"input":[""],
+			"expected output":["correct_output_file.txt-answer.txt"],
+			"score":1
+		 }
+	},
+	"correct_multiple_input":{
+		"compile_string": "gcc correct_multiple_input.c -o correct_multiple_input",
+		"max time": 5,
+		"test case":{
+			"input":[1,2,3,4],
+			"expected output":[2,3,4,5],
+			"score":1
+		 }
+	},
+	"incorrect_multiple_input":{
+		"compile_string": "gcc incorrect_multiple_input.c -o incorrect_multiple_input",
+		"max time": 5,
+		"test case":{
+			"input":[1,2,3,4],
+			"expected output":[2,3,4,5],
+			"score":1
+		 }
+	},
+	"correct_multiple_cases":{
+		"compile_string": "gcc correct_multiple_cases.c -o correct_multiple_cases",
+		"max time": 5,
+		"test case":{
+			"input":["c"],
+			"expected output":["d"],
+			"score":1
+		},
+		 "test case2":{
+			 "input":["a"],
+			 "expected output":["b"],
+			 "score":1
+		 }
+	},
+	"incorrect_multiple_cases":{
+		"compile_string": "gcc incorrect_multiple_cases.c -o incorrect_multiple_cases",
+		"max time": 5,
+		"test case":{
+			"input":[1],
+			"expected output":[2],
+			"score":1
+		},
+		 "test case2":{
+			 "input":[2],
+			 "expected output":[3],
+			 "score":1
+		 }
+	},
+	"correct_single_input":{
+		"compile_string": "gcc correct_single_input.c -o correct_single_input",
+		"max time": 5,
+		"test case":{
+			"input":[25],
+			"expected output":[29],
+			"score":1
+		 }
+	},
+	"illegal_utf":{
+		"compile_string": "gcc illegal_utf.c -o illegal_utf",
+		"max time": 5,
+		"test case":{
+			"input":[""],
+			"expected output":["should be incorrect"],
+			"score":1
+		 }
+	}
+
+}

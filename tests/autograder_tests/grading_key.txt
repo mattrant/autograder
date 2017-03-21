@@ -1,1 +1,0 @@
-{"correct_single_input": {"test case": {"input": [25], "score": 1, "expected output": [29]}, "compile_string": "gcc correct_single_input.c -o correct_single_input", "max time": 5}}

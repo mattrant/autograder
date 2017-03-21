@@ -62,3 +62,5 @@ for t in test_case:
 for k in correct_returns:
     if os.path.isfile(k):
         os.remove(k)
+
+os.remove("grading_key.txt")

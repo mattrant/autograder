@@ -5,7 +5,8 @@
 		 "test case":{
 			 "input":[""],
 			 "expected output":["this should loop infinitely"],
-			 "score":1
+			 "score":1,
+			 "run string":["./inf_loop"]
 		 }
 	 },
 	 "fault": {
@@ -14,7 +15,8 @@
  		 "test case":{
  			 "input":[""],
  			 "expected output":["this should fault"],
- 			 "score":1
+ 			 "score":1,
+			 "run string":["./fault"]
  		 }
 	 },
 	"missing_file": {
@@ -23,7 +25,8 @@
 			 "test case":{
 				 "input":[""],
 				 "expected output":["this file should not exist"],
-				 "score":1
+				 "score":1,
+				 "run string":["./missing_file"]
 			 }
 		 },
 	"correct_double": {
@@ -33,7 +36,8 @@
 					 "tolerance":0.05,
 					 "input":[""],
 					 "expected output":["27.856"],
-					 "score":1
+					 "score":1,
+					 "run string":["./correct_double"]
 				}
 		},
 		"incorrect_double": {
@@ -43,7 +47,8 @@
  					 "tolerance":0.05,
  					 "input":[""],
  					 "expected output":["27.856"],
- 					 "score":1
+ 					 "score":1,
+					 "run string":["./incorrect_double"]
 		 			}
 		 },
 		"correct_regular":{
@@ -52,7 +57,8 @@
 			"test case":{
 				"input":[""],
 				"expected output":["the"],
-				"score":1
+				"score":1,
+				"run string":["./correct_regular"]
 			 }
 		},
 	"incorrect_regular":{
@@ -61,7 +67,8 @@
 		"test case":{
 			"input":[""],
 			"expected output":["the"],
-			"score":1
+			"score":1,
+			"run string":["./incorrect_regular"]
 		 }
 	},
 	"incorrect_file":{
@@ -71,7 +78,8 @@
 		"check files":true,
 			"input":[""],
 			"expected output":["incorrect_output_file.txt-answer.txt"],
-			"score":1
+			"score":1,
+			"run string":["./incorrect_file"]
 		 }
 	},
 	"correct_file":{
@@ -81,7 +89,8 @@
 			"check files":true,
 			"input":[""],
 			"expected output":["correct_output_file.txt-answer.txt"],
-			"score":1
+			"score":1,
+			"run string":["./correct_ile"]
 		 }
 	},
 	"correct_multiple_input":{
@@ -90,7 +99,8 @@
 		"test case":{
 			"input":[1,2,3,4],
 			"expected output":[2,3,4,5],
-			"score":1
+			"score":1,
+			"run string":["./correct_multiple_input","./correct_multiple_input","./correct_multiple_input","./correct_multiple_input"]
 		 }
 	},
 	"incorrect_multiple_input":{
@@ -99,7 +109,8 @@
 		"test case":{
 			"input":[1,2,3,4],
 			"expected output":[2,3,4,5],
-			"score":1
+			"score":1,
+			"run string":["./incorrect_multiple_input","./incorrect_multiple_input","./incorrect_multiple_input","./incorrect_multiple_input"]
 		 }
 	},
 	"correct_multiple_cases":{
@@ -108,12 +119,14 @@
 		"test case":{
 			"input":["c"],
 			"expected output":["d"],
-			"score":1
+			"score":1,
+			"run string":["./correct_multiple_cases"]
 		},
 		 "test case2":{
 			 "input":["a"],
 			 "expected output":["b"],
-			 "score":1
+			 "score":1,
+			 "run string":["./correct_multiple_cases"]
 		 }
 	},
 	"incorrect_multiple_cases":{
@@ -122,12 +135,14 @@
 		"test case":{
 			"input":[1],
 			"expected output":[2],
-			"score":1
+			"score":1,
+			"run string":["./incorrect_multiple_cases"]
 		},
 		 "test case2":{
 			 "input":[2],
 			 "expected output":[3],
-			 "score":1
+			 "score":1,
+			 "run string":["./incorrect_multiple_cases"]
 		 }
 	},
 	"correct_single_input":{
@@ -136,7 +151,8 @@
 		"test case":{
 			"input":[25],
 			"expected output":[29],
-			"score":1
+			"score":1,
+			"run string":["./correct_single_input"]
 		 }
 	},
 	"illegal_utf":{
@@ -145,7 +161,8 @@
 		"test case":{
 			"input":[""],
 			"expected output":["should be incorrect"],
-			"score":1
+			"score":1,
+			"run string":["./illegal_utf"]
 		 }
 	}
 

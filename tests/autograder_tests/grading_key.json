@@ -90,7 +90,7 @@
 			"input":[""],
 			"expected output":["correct_output_file.txt-answer.txt"],
 			"score":1,
-			"run string":["./correct_ile"]
+			"run string":["./correct_file"]
 		 }
 	},
 	"correct_multiple_input":{

@@ -77,7 +77,8 @@ class autograder_outline:
                 i = 0
                 for program_input in self.grading_key[problem][test_case]["input"]:
                     max_time = self.grading_key[problem]["max time"]
-                    result ,error = self.get_output(problem,program_input,max_time)
+                    run_string = self.grading_key[problem][test_case]["run string"][i]
+                    result ,error = self.get_output(run_string,program_input,max_time)
                     #get expected answer from JSON file
                     print("~"*40)
                     print("Input:",program_input)
@@ -184,11 +185,13 @@ class autograder_outline:
             for test_case in self.grading_key[problem]:
                 i = 0
                 for program_input in self.grading_key[problem][test_case]["input"]:
-
-                    result ,error = self.get_output(file_output_name,program_input,max_time)
+                    run_string = self.grading_key[problem][test_case]["run string"][i]
+                    
+                    result ,error = self.get_output(run_string,program_input,max_time)
 
                     #get expected answer from JSON file
                     expected_output = str(self.grading_key[problem][test_case]["expected output"][i])
+
 
                     #check if file contents should be compared
                     if("check files" in self.grading_key[problem][test_case]):
@@ -276,11 +279,11 @@ class autograder_outline:
             print(value,"not within",tolerance*100,"percent of",expected_value)
             return False
 
-    def get_output(self,file_name,program_input,max_time):
+    def get_output(self,run_string,program_input,max_time):
         """
         Gets output from a program by giving it input to stdin
         Input:
-            file_name: name of the prgram to be run
+            run_string: command to be passed to the shell to run the program to be graded
             program_input: input to be sent to the program's stdin
             max_time: maximum allowed time for a program to produce an output
         Returns:
@@ -288,7 +291,8 @@ class autograder_outline:
             program and error is the error output of the program
         """
         #start program
-        p = Popen('./'+file_name,shell=True,stdin = PIPE, stdout = PIPE,stderr=PIPE)
+        #TODO:catch error if run_string fails
+        p = Popen(run_string,shell=True,stdin = PIPE, stdout = PIPE,stderr=PIPE)
         #give input to program
         #all python3 strings must be converted to/from bytes with IO
         try:

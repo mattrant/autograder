@@ -93,8 +93,9 @@ def check_key_structure(key):
             is_legal_key = False
         for t in test_cases:
 
-            required_test_case_keys = {"expected output":list,"input":list,"score":int}
+            required_test_case_keys = {"expected output":list,"input":list,"score":int,"run string":list}
             optional_test_case_keys = {"check files":bool,"tolerance":float}
+            length_match =  {"expected output":list,"input":list,"run string":list}
 
             for k in test_cases[t]:
                 if k in required_test_case_keys:
@@ -112,8 +113,8 @@ def check_key_structure(key):
                 else:
                     print("Error: Test Case",t,": illegal key",repr(k),"present")
                     is_legal_key = False
-            if not ( "expected output" in required_test_case_keys or "input" in required_test_case_keys):
-                if len(test_cases[t]["expected output"]) != len(test_cases[t]["input"]):
+            if not ( "expected output" in required_test_case_keys or "input" in required_test_case_keys or "run string"):
+                if len(test_cases[t]["expected output"]) != len(test_cases[t]["input"] and len(test_cases[t]["input"] !=len(test_cases[t]["run string"]))):
                     print("Error: Test case",repr(t),": 'expected output' and 'input' must be of equal length")
                     is_legal_key = False
             for key in required_test_case_keys:

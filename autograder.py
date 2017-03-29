@@ -19,6 +19,7 @@ class autograder_outline:
         correct_output = open("grading_key.txt","r")
         file_contents = correct_output.read()
         #parse in json info from grading key
+        self.register_flag_table()
         self.grading_key = json.loads(file_contents)
         if len(argv)>1:
             try:
@@ -186,7 +187,7 @@ class autograder_outline:
                 i = 0
                 for program_input in self.grading_key[problem][test_case]["input"]:
                     run_string = self.grading_key[problem][test_case]["run string"][i]
-                    
+
                     result ,error = self.get_output(run_string,program_input,max_time)
 
                     #get expected answer from JSON file

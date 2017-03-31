@@ -1,6 +1,8 @@
 import json
 import os
-import sys
+suppress_output = False
+class DupKey(Exception):
+    pass
 def dup_check(pairs):
     """
     Checks for duplicate values present in the grading key. If a duplicate key is
@@ -13,10 +15,11 @@ def dup_check(pairs):
     d = {}
     for k,v in pairs:
         if k in d:
-            print("Error: more than one instance of key",repr(k),"at same depth")
-            print("\tFirst instance of key",repr(k),"has value",d[k])
-            print("\tSecond instance of key",repr(k),"has value",v)
-            sys.exit(0)
+            if not suppress_output:
+                print("Error: more than one instance of key",repr(k),"at same depth")
+                print("\tFirst instance of key",repr(k),"has value",d[k])
+                print("\tSecond instance of key",repr(k),"has value",v)
+            raise DupKey()
         else:
             d[k] = v
     return d
@@ -28,7 +31,8 @@ def legal_grading_key():
         True if the key conforms to the format for grading keys
     """
     if not os.path.isfile("grading_key.txt"):
-        print("Grading key not found or file is not named grading_key.txt")
+        if not suppress_output:
+            print("Grading key not found or file is not named grading_key.txt")
         return False;
 
     key = open("grading_key.txt","r")
@@ -36,10 +40,12 @@ def legal_grading_key():
     try:
         contents = json.loads(key.read(),object_pairs_hook=dup_check)
     except ValueError as v:
-        print("Illegal JSON formatting. Please ensure that the grading key is legal JSON")
-        print("\t>>Error:",v)
+        if not suppress_output:
+            print("Illegal JSON formatting. Please ensure that the grading key is legal JSON")
+            print("\t>>Error:",v)
         return False
-
+    except DupKey:
+        return False;
     return check_key_structure(contents)
 
 def check_key_structure(key):
@@ -55,14 +61,17 @@ def check_key_structure(key):
     problems = {}
     for k in key:
         if type(key[k]) != dict:
-            print("Illegal key at top level of grading key. Key must be a HW Problem (JSON Dictionary)");
+            if not suppress_output:
+                print("Illegal key at top level of grading key. Key must be a HW Problem (JSON Dictionary)");
+            is_legal_key = False
         else:
             problems[k] = key[k]
-
-    print(40 * '~')
+    if not suppress_output:
+        print(40 * '~')
 
     for p in problems:
-        print("Validating problem",repr(p),"...")
+        if not suppress_output:
+            print("Validating problem",repr(p),"...")
 
         required_problem_keys = {"max time":int,"compile_string":str}
         test_case_present = False
@@ -73,23 +82,27 @@ def check_key_structure(key):
                 if type(problems[p][k]) == required_problem_keys[k]:
                     del required_problem_keys[k]
                 else:
-                    print("Error: key",repr(k),"has value of type",
-                    type(problems[p][k]).__name__,". Value must be of type",required_problem_keys[k].__name__)
+                    if not suppress_output:
+                        print("Error: key",repr(k),"has value of type",
+                        type(problems[p][k]).__name__,". Value must be of type",required_problem_keys[k].__name__)
                     is_legal_key = False;
             elif type(problems[p][k]) == dict:
                 #must be a test case
                 test_cases[k] = problems[p][k]
                 test_case_present = True
             else:
-                print("Illegal key",repr(k))
+                if not suppress_output:
+                    print("Illegal key",repr(k))
                 is_legal_key = False
 
         if not test_case_present:
-            print("Error: must contain at least 1 test case")
+            if not suppress_output:
+                print("Error: must contain at least 1 test case")
             is_legal_key = False
 
         for k in required_problem_keys:
-            print("Error: Problem",repr(p)," must contain the key",repr(k),"with a value of type",required_problem_keys[k].__name__)
+            if not suppress_output:
+                print("Error: Problem",repr(p)," must contain the key",repr(k),"with a value of type",required_problem_keys[k].__name__)
             is_legal_key = False
         for t in test_cases:
 
@@ -102,25 +115,31 @@ def check_key_structure(key):
                     if type(test_cases[t][k]) == required_test_case_keys[k]:
                         del required_test_case_keys[k]
                     else:
-                        print("Error: Test Case",t,": key",repr(k),"must contain a value of type",required_test_case_keys[k].__name__)
+                        if not suppress_output:
+                            print("Error: Test Case",t,": key",repr(k),"must contain a value of type",required_test_case_keys[k].__name__)
                         is_legal_key = False
                 elif k in optional_test_case_keys:
                     if type(test_cases[t][k]) == optional_test_case_keys[k]:
                         del optional_test_case_keys[k]
                     else:
-                        print("Error: Test Case",t,": key",repr(k),"must contain a value of type",optional_test_case_keys[k].__name__)
+                        if not suppress_output:
+                            print("Error: Test Case",t,": key",repr(k),"must contain a value of type",optional_test_case_keys[k].__name__)
                         is_legal_key = False
                 else:
-                    print("Error: Test Case",t,": illegal key",repr(k),"present")
+                    if not suppress_output:
+                        print("Error: Test Case",t,": illegal key",repr(k),"present")
                     is_legal_key = False
-            if not ( "expected output" in required_test_case_keys or "input" in required_test_case_keys or "run string"):
-                if len(test_cases[t]["expected output"]) != len(test_cases[t]["input"] and len(test_cases[t]["input"] !=len(test_cases[t]["run string"]))):
-                    print("Error: Test case",repr(t),": 'expected output' and 'input' must be of equal length")
+            if not ( "expected output" in required_test_case_keys or "input" in required_test_case_keys or "run string"in required_test_case_keys):
+                if len(test_cases[t]["expected output"]) != len(test_cases[t]["input"]) or len(test_cases[t]["input"]) !=len(test_cases[t]["run string"]):
+                    if not suppress_output:
+                        print("Error: Test case",repr(t),": 'expected output' and 'input' and 'run string' must be of equal length")
                     is_legal_key = False
             for key in required_test_case_keys:
-                print("Error: Test case",repr(t),"must contain the key",repr(key),"with a value of type",required_test_case_keys[key].__name__)
+                if not suppress_output:
+                    print("Error: Test case",repr(t),"must contain the key",repr(key),"with a value of type",required_test_case_keys[key].__name__)
                 is_legal_key = False
-        print (40 *'~')
+        if not suppress_output:
+            print (40 *'~')
     return is_legal_key
 if __name__ == "__main__":
     if legal_grading_key():

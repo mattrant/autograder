@@ -1,0 +1,23 @@
+{
+	"correct_file": {
+		"compile_string": "gcc correct_file.c -o correct_file",
+		 "test case": {
+			"expected output": [0],
+			 "score": 1,
+			 "input": [""],
+			 "check files": true,
+			 "run string": ["./correct_file"]
+			},
+		 "max time": 5
+		},
+	 "correct_multiple_input": {
+		"compile_string": "gcc correct_multiple_input.c -o correct_multiple_input",
+		 "test case": {
+			"expected output": [0, 0, 0, 0],
+			 "score": 1,
+			 "input": [1, 2, 3, 4],
+			 "run string": ["./correct_multiple_input", "./correct_multiple_input", "./correct_multiple_input", "./correct_multiple_input"]
+			},
+		 "max time": 5
+		}
+	}

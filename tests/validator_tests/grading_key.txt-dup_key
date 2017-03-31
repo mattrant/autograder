@@ -1,0 +1,14 @@
+{
+	"correct_file":{
+		"compile_string": "gcc correct_file.c -o correct_file",
+		"max time": 5,
+    "max time": 7,
+		"test case":{
+			"check files":true,
+			"input":[""],
+			"expected output":["correct_output_file.txt-answer.txt"],
+			"score":1,
+			"run string":["./correct_file"]
+		}
+	}
+}

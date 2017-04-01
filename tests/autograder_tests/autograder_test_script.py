@@ -19,6 +19,8 @@ correct_returns = {"inf_loop":'{"scores":{"inf_loop":0}}',
 "illegal_utf":'{"scores":{"illegal_utf":0}}'
 }
 
+print("Running autograder tests...")
+
 test_case = json.loads(open("grading_key.json","r").read())
 all_correct =0
 

@@ -34,6 +34,8 @@ green_color = '\033[92m'
 end_color = '\033[0m'
 red_color = '\033[91m'
 
+print("Running validator tests...")
+
 test_cases = []
 for entry in listdir():
     if ".txt" in entry:

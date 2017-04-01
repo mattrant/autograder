@@ -1,0 +1,4 @@
+C is a computer programming language developed by Dennis M. Ritchie between 1969 and 1973 at Bell Labs.
+Both C and C++ will be covered in this course.
+To become an excellent programmer, the only way is to practice.
+Many later languages have borrowed directly or indirectly from C, including C++, D, Go, Rust, Java, JavaScript, Limbo, LPC, C#, Objective-C, Perl, PHP, Python, Swift, Verilog (hardware description language), and Unix's C shell.

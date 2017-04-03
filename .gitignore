@@ -1,2 +1,3 @@
 *.bak
 *.pyc
+**/grading_key.txt

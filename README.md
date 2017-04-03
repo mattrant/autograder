@@ -1,6 +1,6 @@
 # Autograder Script
 
-This script can be used with Autolab software for automatic grading of software. Currently only compiled languages are supported for use with this script. In the future changes will be made to allow for use of interpreted languages as well. There will also later be an addition for use of command line arguments.
+This script can be used with Autolab software for automatic grading of software. This script is intended to be easy to use and get the job done for the majority of cases where automatic unit testing is needed.
 
 A user manual can be found here:  https://docs.google.com/document/d/1TqWTJw4A20Qh2En2GP1Eww8WYAkSyEqHl2waPhc4n0M/edit?usp=sharing
 

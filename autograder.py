@@ -20,7 +20,13 @@ class autograder_outline:
         file_contents = correct_output.read()
         #parse in json info from grading key
         self.register_flag_table()
-        self.grading_key = json.loads(file_contents)
+        try:
+            self.grading_key = json.loads(file_contents)
+        except ValueError as v:
+            print("Illegal JSON formatting. Please ensure that the grading key is legal JSON")
+            print("\t>>Error:",v)
+            exit(0)
+
         if len(argv)>1:
             try:
                 for flag in argv[1:]:

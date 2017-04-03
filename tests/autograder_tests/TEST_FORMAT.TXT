@@ -1,0 +1,1 @@
+All tests should be added as a problem to the grading_key.json file as autograder problems. The name of the problem in the file and the correct JSON output of the autograder should also be added to the correct_returns dictionary at the top of the autograder_test_script.py file.

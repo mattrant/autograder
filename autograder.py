@@ -379,7 +379,13 @@ class autograder_outline:
             return True
         except CalledProcessError as e:
             # end='' is used to suppress the newline from print() in python 3.x
-            print( str(e.output,"utf-8",errors="ignore"),end='')
+            #TODO: see if it's possible to make backslashreplace the default handler
+            try:
+                print(e.output.decode("utf-8","backslashreplace"),end='')
+            except UnicodeEncodeError:
+                s =e.output.decode("ascii","backslashreplace")
+                print(s,end='')
+
             print("Compilation error. Exiting grading for problem",problem,"...")
             return False
         except OSError as e:

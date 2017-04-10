@@ -306,16 +306,16 @@ class autograder_outline:
             error: the error output of the program
         """
         print("Incorrect Output")
-        print("\tInput:",program_input)
+        print("\tInput:",repr(string_to_stdout_encoding(program_input)))
         #repr() will print escape characters
         # (">"*9) used to line up the output and expected output vertically
         #for easier visual comparison of strings
-        print("\tOutput"+(">"*9)+":",repr(output))
+        print("\tOutput"+(">"*9)+":",repr(string_to_stdout_encoding(output)))
         if not error=='':
-            print("\tError:",repr(error))
+            print("\tError:",repr(string_to_stdout_encoding(error)))
         #for unicode encoded strings python will print out u'<contents of string'
         #the purpose of [1:] is to remove the 'u' from the printed output
-        print("\tExpected Output:", repr(expected_output))
+        print("\tExpected Output:", repr(string_to_stdout_encoding(expected_output)))
         print("~"*40)
 
     def print_dictionary(self,dictionary):
@@ -352,18 +352,24 @@ class autograder_outline:
         except CalledProcessError as e:
             # end='' is used to suppress the newline from print() in python 3.x
             #TODO: see if it's possible to make backslashreplace the default handler
-            try:
-                print(e.output.decode("utf-8","backslashreplace"),end='')
-            except UnicodeEncodeError:
-                s =e.output.decode("ascii","backslashreplace")
-                print(s,end='')
-
+            print(e.output.decode(stdout.encoding,"backslashreplace"),end='')
             print("Compilation error. Exiting grading for problem",problem,"...")
             return False
         except OSError as e:
             print("Compilation error. Exiting grading for problem",problem,"...")
             return False
-#perform this action if this file is run as a script
+
+def string_to_stdout_encoding(string):
+    """
+    Takes a string, encodes it to the encoding supported by stdout, and decodes
+    the byte representation encoding back to a string in the same format.
+    Characters that are illegal in the supported encoding are replaced by the
+    backslashreplace UnicodeError handler
+    Input:
+        string: the string to be changed
+    """
+    return string.encode(stdout.encoding,"backslashreplace").decode(stdout.encoding)
+
 def beautify_json(json_string):
     """
     Makes the json string human readable

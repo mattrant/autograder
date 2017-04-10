@@ -1,7 +1,7 @@
 import json
 from copy import deepcopy
 from subprocess import call,Popen,PIPE,check_output,CalledProcessError,STDOUT,TimeoutExpired
-from sys import argv,exit
+from sys import argv,exit,stdout
 import os.path
 from grading_key_validator import legal_grading_key
 
@@ -100,37 +100,9 @@ class autograder_outline:
         has been made human readable
         """
         key = open("grading_key.txt","w")
-        json_string = self.beautify_json(json.dumps(self.grading_key))
+        json_string = beautify_json(json.dumps(self.grading_key))
         key.write(json_string)
-    def beautify_json(self,json_string):
-        """
-        Makes the json string human readable
-        Input:
-            json_string: string to be made human readable
-        """
 
-        tabs = 0
-        finished_json = ""
-        in_array = False
-
-        for c in json_string:
-            if c == '{':
-                tabs+=1
-                finished_json+=c+'\n'+'\t'*tabs
-            elif c == '}':
-                finished_json+='\n'+'\t'*tabs+c
-                tabs-=1
-            elif c == ',' and not in_array:
-                finished_json+=c+'\n'+'\t'*tabs
-            elif c=='[':
-                finished_json+=c
-                in_array = True
-            elif c == ']':
-                finished_json+=c
-                in_array = False
-            else:
-                finished_json+=c
-        return "".join(finished_json)
     def clear_answers(self):
         """
         Clears the answers present in the grading key and sets the expected_output
@@ -392,5 +364,36 @@ class autograder_outline:
             print("Compilation error. Exiting grading for problem",problem,"...")
             return False
 #perform this action if this file is run as a script
+def beautify_json(json_string):
+    """
+    Makes the json string human readable
+    Input:
+        json_string: string to be made human readable
+    """
+
+    tabs = 0
+    finished_json = ""
+    in_array = False
+
+    for c in json_string:
+        if c == '{':
+            tabs+=1
+            finished_json+=c+'\n'+'\t'*tabs
+        elif c == '}':
+            finished_json+='\n'+'\t'*tabs+c
+            tabs-=1
+        elif c == ',' and not in_array:
+            finished_json+=c+'\n'+'\t'*tabs
+        elif c=='[':
+            finished_json+=c
+            in_array = True
+        elif c == ']':
+            finished_json+=c
+            in_array = False
+        else:
+            finished_json+=c
+    return "".join(finished_json)
+
+
 if __name__ == "__main__":
     a = autograder_outline()

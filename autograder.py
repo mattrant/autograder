@@ -164,6 +164,8 @@ class autograder_outline:
             for test_case in self.grading_key[problem]:
                 i = 0
                 for program_input in self.grading_key[problem][test_case]["input"]:
+
+                    program_input = str(program_input)
                     run_string = self.grading_key[problem][test_case]["run string"][i]
 
                     result ,error = self.get_output(run_string,program_input,max_time)

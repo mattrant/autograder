@@ -175,10 +175,14 @@ class autograder_outline:
 
 
                     #check if file contents should be compared
+                    #TODO:put this in a separate function
                     if("check files" in self.grading_key[problem][test_case]):
+                        expected_output=expected_output.strip()
                         #removes the last '-' seperated portion of the file name
-                        answer_file_name = expected_output
-                        student_file_name = "".join(answer_file_name.split("-")[:-1])
+                        answer_file_name = expected_output.split(" ")[-1]
+                        #remove the last space separated word from the expected_output string
+                        correct_stdout =" ".join(expected_output.split(" ")[:-1])
+                        student_file_name ="".join(answer_file_name.split("-")[:-1])
 
                         student_contents = ""
 
@@ -188,7 +192,7 @@ class autograder_outline:
                             #someone must have forgot to upload them
                             raise OSError("File not Found:",answer_file_name)
 
-                        answer_contets = open(answer_file_name,"rt").read()
+                        answer_contents = open(answer_file_name,"rt").read()
 
                         if not os.path.isfile(student_file_name):
                             print("File not found:",student_file_name)
@@ -196,10 +200,10 @@ class autograder_outline:
                             student_contents = open(student_file_name,"rt").read()
 
                         #TODO: float comparison from file contents
-                        if(student_contents == answer_contets):
+                        if(student_contents == answer_contents and result == correct_stdout):
                             self.student_response[problem][test_case]["score"][i]= self.grading_key[problem][test_case]["score"]
                         else:
-                            self.print_hint(program_input,student_contents,answer_contets,error)
+                            self.print_hint(program_input,result +"|"+student_contents,correct_stdout+"|"+answer_contents,error)
 
 
                     elif "tolerance"in self.grading_key[problem][test_case]:

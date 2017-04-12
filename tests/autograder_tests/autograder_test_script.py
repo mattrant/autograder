@@ -3,6 +3,7 @@ import subprocess
 from grading_key_validator import legal_grading_key
 import os
 correct_returns = {"inf_loop":'{"scores":{"inf_loop":0}}',
+"file_incorrect_stdout":'{"scores":{"file_incorrect_stdout":0}}',
 "fault":'{"scores":{"fault":0}}',
 "missing_file":'{"scores":{"missing_file":0}}',
 "correct_double":'{"scores":{"correct_double":1}}',
@@ -45,6 +46,7 @@ for t in test_case:
             print(red_color+x_mark+end_color)
             print("\tExpected:",expected_dict)
             print("\tActual>>:",actual_dict)
+            print("\tAutograder outpupt:",results)
         else:
             print(green_color+check+end_color)
             all_correct+=1;

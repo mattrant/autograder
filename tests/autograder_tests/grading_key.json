@@ -1,4 +1,14 @@
 {
+	"file_incorrect_stdout":{
+		"compile_string":"gcc file_incorrect_stdout.c -o file_incorrect_stdout",
+		"max time":5,
+		"test case":{
+			"input":[""],
+			"expected output":["Writing to file correct_output_file.txt-answer.txt"],
+			"score":1,
+			"run string":["./file_incorrect_stdout"]
+		}
+	},
 	"inf_loop": {
 		 "compile_string": "gcc inf_loop.c -o inf_loop",
 		 "max time": 5,
@@ -77,7 +87,7 @@
 		"test case":{
 		"check files":true,
 			"input":[""],
-			"expected output":["incorrect_output_file.txt-answer.txt"],
+			"expected output":["Writing to file...\n incorrect_output_file.txt-answer.txt"],
 			"score":1,
 			"run string":["./incorrect_file"]
 		 }
@@ -88,7 +98,7 @@
 		"test case":{
 			"check files":true,
 			"input":[""],
-			"expected output":["correct_output_file.txt-answer.txt"],
+			"expected output":["Writing to file...\n correct_output_file.txt-answer.txt"],
 			"score":1,
 			"run string":["./correct_file"]
 		 }

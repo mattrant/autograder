@@ -177,29 +177,16 @@ class autograder_outline:
                     #check if file contents should be compared
                     #TODO:put this in a separate function
                     if("check files" in self.grading_key[problem][test_case]):
+
+                        #prevent whitespace after the filename to prevent empty filename when parsing
                         expected_output=expected_output.strip()
                         #removes the last '-' seperated portion of the file name
-                        answer_file_name = expected_output.split(" ")[-1]
                         #remove the last space separated word from the expected_output string
                         correct_stdout =" ".join(expected_output.split(" ")[:-1])
-                        student_file_name ="".join(answer_file_name.split("-")[:-1])
+                        answer_file_name = expected_output.split(" ")[-1]
 
-                        student_contents = ""
+                        (student_contents,answer_contents) = self.get_file_contents(answer_file_name);
 
-                        if not os.path.isfile(answer_file_name):
-                            print("Answer file not found:",answer_file_name)
-                            #answer files should be present
-                            #someone must have forgot to upload them
-                            raise OSError("File not Found:",answer_file_name)
-
-                        answer_contents = open(answer_file_name,"rt").read()
-
-                        if not os.path.isfile(student_file_name):
-                            print("File not found:",student_file_name)
-                        else:
-                            student_contents = open(student_file_name,"rt").read()
-
-                        #TODO: float comparison from file contents
                         if(student_contents == answer_contents and result == correct_stdout):
                             self.student_response[problem][test_case]["score"][i]= self.grading_key[problem][test_case]["score"]
                         else:
@@ -223,6 +210,34 @@ class autograder_outline:
                     i+=1
         self.report_grade()
         self.reported = True
+
+    def get_file_contents(self,answer_file_name):
+        """
+        Gets the content from both the student file and the answer file
+        Input:
+            asnwer_file_name: the name of the answer file that has the student filename
+                        embedded within it
+        Returns:
+            The contents of both the student file and the answer file in a tuple
+            with the format: (student_contents,answer_contents)
+        """
+        student_file_name ="".join(answer_file_name.split("-")[:-1])
+        student_contents = ""
+
+        if not os.path.isfile(answer_file_name):
+            print("Answer file not found:",answer_file_name)
+            #answer files should be present
+            #someone must have forgot to upload them
+            raise OSError("File not Found:",answer_file_name)
+
+        answer_contents = open(answer_file_name,"rt").read()
+
+        if not os.path.isfile(student_file_name):
+            print("File not found:",student_file_name)
+        else:
+            student_contents = open(student_file_name,"rt").read()
+
+        return (student_contents,answer_contents)
 
     def compare_float(self,result,expected_output,tolerance):
         """

@@ -293,8 +293,8 @@ class autograder_outline:
         #start program
         #TODO:catch error if run_string fails
         p = Popen(run_string,shell=True,stdin = PIPE, stdout = PIPE,stderr=PIPE)
-        #give input to program
-        #all python3 strings must be converted to/from bytes with IO
+        print(run_string);
+
         try:
             result,error =p.communicate(input=bytes(str(program_input),"ascii"),timeout=max_time)
             return (str(result,'utf-8',errors="ignore"),str(error,'utf-8',errors="ignore"))

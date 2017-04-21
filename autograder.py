@@ -163,7 +163,13 @@ class autograder_outline:
 
             for test_case in self.grading_key[problem]:
                 i = 0
+
+
+
                 for program_input in self.grading_key[problem][test_case]["input"]:
+                    #mainly needed for clear output for incorrect file contents
+
+                    hint_dict = {}
 
                     program_input = str(program_input)
                     run_string = self.grading_key[problem][test_case]["run string"][i]
@@ -190,8 +196,11 @@ class autograder_outline:
                         if(student_contents == answer_contents and result == correct_stdout):
                             self.student_response[problem][test_case]["score"][i]= self.grading_key[problem][test_case]["score"]
                         else:
-                            self.print_hint(program_input,result +"|"+student_contents,correct_stdout+"|"+answer_contents,error)
-
+                            if(student_contents!=answer_contents):
+                                student_file_name = self.get_student_file_name(answer_file_name)
+                                hint_dict[student_file_name] = (student_contents,answer_contents)
+                            if(result != correct_stdout):
+                                hint_dict["Output"] = (result,correct_stdout)
 
                     elif "tolerance"in self.grading_key[problem][test_case]:
                         tolerance = self.grading_key[problem][test_case]["tolerance"]
@@ -199,18 +208,29 @@ class autograder_outline:
                         if self.compare_float(result,expected_output,tolerance):
                             self.student_response[problem][test_case]["score"][i]= self.grading_key[problem][test_case]["score"]
                         else:
-                            self.print_hint(program_input,result,expected_output,error)
+                            hint_dict["Output"] = (result,expected_output)
                     else:
                         if result == expected_output:
                             #mark that the student got this one correct
                             self.student_response[problem][test_case]["score"][i]= self.grading_key[problem][test_case]["score"]
                         else:
                             #give hint for problem since it was incorrect
-                            self.print_hint(program_input,result,expected_output,error)
+                            hint_dict["Output"] = (result,expected_output);
+
+                    self.print_hint(program_input,hint_dict,error);
                     i+=1
         self.report_grade()
         self.reported = True
-
+    def get_student_file_name(self,answer_file_name):
+        """
+        Parses the name of the student file out of the name of the answer file
+        provided in expected_output
+        Input:
+            answer_file_name
+        Returns:
+            A string containing the student file name
+        """
+        return "".join(answer_file_name.split("-")[:-1])
     def get_file_contents(self,answer_file_name):
         """
         Gets the content from both the student file and the answer file
@@ -221,7 +241,8 @@ class autograder_outline:
             The contents of both the student file and the answer file in a tuple
             with the format: (student_contents,answer_contents)
         """
-        student_file_name ="".join(answer_file_name.split("-")[:-1])
+        student_file_name = self.get_student_file_name(answer_file_name);
+
         student_contents = ""
 
         if not os.path.isfile(answer_file_name):
@@ -317,26 +338,34 @@ class autograder_outline:
             result["scores"][problem] = total_score
         print(json.dumps(result))
 
-    def print_hint(self,program_input,output,expected_output,error):
+    def print_hint(self,program_input,hint_dict,error):
         """
         Prints out the hint for the specified arguments
         Input:
             program_input: input provided to graded program
-            output: output produced by program for program_input
-            expected_output: correct ouput that should result from input of program_input
+            hint_dict: The keys of the entries should be the strings that should
+                        be printed to output to identify where the output originated.
+                        The values of the dict should be tuples in the form
+                        (output,expected_output).
             error: the error output of the program
         """
-        print("Incorrect Output")
-        print("\tInput:",repr(string_to_stdout_encoding(program_input)))
-        #repr() will print escape characters
-        # (">"*9) used to line up the output and expected output vertically
-        #for easier visual comparison of strings
-        print("\tOutput"+(">"*9)+":",repr(string_to_stdout_encoding(output)))
+        if len(hint_dict) != 0:
+            print("Incorrect Output")
+            print("\tInput:",repr(string_to_stdout_encoding(program_input)))
         if not error=='':
             print("\tError:",repr(string_to_stdout_encoding(error)))
-        #for unicode encoded strings python will print out u'<contents of string'
-        #the purpose of [1:] is to remove the 'u' from the printed output
-        print("\tExpected Output:", repr(string_to_stdout_encoding(expected_output)))
+
+
+        for k in hint_dict:
+            (output,expected_output) = hint_dict[k]
+            #repr() will print escape characters
+            # (">"*9) used to line up the output and expected output vertically
+            #for easier visual comparison of strings
+            print("\t"+k+(">"*9)+":",repr(string_to_stdout_encoding(output)))
+
+            #for unicode encoded strings python will print out u'<contents of string'
+            #the purpose of [1:] is to remove the 'u' from the printed output
+            print("\tExpected "+k+":", repr(string_to_stdout_encoding(expected_output)))
         print("~"*40)
 
     def print_dictionary(self,dictionary):

@@ -164,8 +164,6 @@ class autograder_outline:
             for test_case in self.grading_key[problem]:
                 i = 0
 
-
-
                 for program_input in self.grading_key[problem][test_case]["input"]:
                     #mainly needed for clear output for incorrect file contents
 
@@ -397,6 +395,7 @@ class autograder_outline:
 
 
         try:
+            print(cmd_string)
             check_output(cmd_string.split(" "),stderr=STDOUT)
             return True
         except CalledProcessError as e:

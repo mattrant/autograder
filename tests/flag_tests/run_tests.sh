@@ -5,7 +5,7 @@ do
         cp ../../${i} .
 done
 
-python3 flag_tests.py
+python3 flag_tests.py $1
 
 for i in ${files[@]}
 do

@@ -1,6 +1,7 @@
 from os import listdir, remove
 import subprocess
 import grading_key_validator
+import sys
 """
 All test cases should follow the format grading_key.txt-<identifier>. There should
 be no hyphens present in the identifier. Thisscript will run through all test keys
@@ -28,6 +29,11 @@ correct_results = {
     'dup_key':False,
     'illegal_json':False
 }
+
+VERBOSE=False;
+if len(sys.argv)>1 and sys.argv[1] == "--verbose":
+    VERBOSE = True;
+
 check = u'\u2713'
 x_mark = u'\u2717'
 green_color = '\033[92m'
@@ -40,7 +46,7 @@ test_cases = []
 for entry in listdir():
     if ".txt" in entry:
         test_cases.append(entry)
-grading_key_validator.suppress_output= True
+grading_key_validator.suppress_output= not VERBOSE;
 for t in test_cases:
     try:
         name = t.split("-")[1]

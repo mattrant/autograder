@@ -2,6 +2,7 @@ import json
 import subprocess
 from grading_key_validator import legal_grading_key
 import os
+import sys
 correct_returns = {"inf_loop":'{"scores":{"inf_loop":0}}',
 "file_incorrect_stdout":'{"scores":{"file_incorrect_stdout":0}}',
 "fault":'{"scores":{"fault":0}}',
@@ -19,6 +20,10 @@ correct_returns = {"inf_loop":'{"scores":{"inf_loop":0}}',
 "correct_single_input":'{"scores":{"correct_single_input":1}}',
 "illegal_utf":'{"scores":{"illegal_utf":0}}'
 }
+
+VERBOSE=False;
+if len(sys.argv)>1 and sys.argv[1] == "--verbose":
+    VERBOSE = True;
 
 print("Running autograder tests...")
 
@@ -50,6 +55,9 @@ for t in test_case:
         else:
             print(green_color+check+end_color)
             all_correct+=1;
+        if VERBOSE:
+            print(results)
+
     except ValueError as v:
         print(red_color+x_mark+end_color)
         print(v)

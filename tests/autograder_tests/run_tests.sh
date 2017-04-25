@@ -4,7 +4,7 @@ for i in ${files[@]}
 do
         cp ../../${i} .
 done
-python3 autograder_test_script.py
+python3 autograder_test_script.py $1
 for i in ${files[@]}
 do
         rm ${i}
